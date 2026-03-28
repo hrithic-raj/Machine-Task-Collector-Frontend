@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { UPLOAD_LIMITS } from '../../lib/constants';
 import Button from '../ui/Button';
 
-const FileUploader = ({ files, setFiles, existingFiles = [] }) => {
+const FileUploader = ({ files, setFiles, existingFiles = [], onRemoveFile }) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef(null);
@@ -65,9 +65,10 @@ const FileUploader = ({ files, setFiles, existingFiles = [] }) => {
   };
 
   const removeExistingFile = (fileId) => {
-    // This would call the API to delete the file from the task
-    // For now, just filter out from display (handled in task update)
-    console.log('Remove existing file:', fileId);
+    // Call parent handler to remove this file
+    if (onRemoveFile) {
+      onRemoveFile(fileId);
+    }
   };
 
   const formatFileSize = (bytes) => {
@@ -89,35 +90,42 @@ const FileUploader = ({ files, setFiles, existingFiles = [] }) => {
         <div className="mb-4">
           <p className="text-sm text-gray-600 mb-2">Current files:</p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {existingFiles.map((file, idx) => (
-              <div
-                key={file._id || idx}
-                className="border rounded-lg p-3 relative group"
-              >
-                {file.mimetype.startsWith('image/') ? (
-                  <img
-                    src={`/${file.path}`}
-                    alt={file.originalName}
-                    className="w-full h-32 object-cover rounded mb-2"
-                  />
-                ) : (
-                  <div className="w-full h-32 bg-gray-100 flex items-center justify-center rounded mb-2">
-                    <span className="text-4xl">📄</span>
-                  </div>
-                )}
-                <p className="text-xs text-gray-600 truncate">{file.originalName}</p>
-                <button
-                  type="button"
-                  onClick={() => removeExistingFile(file._id)}
-                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  title="Remove file"
+            {existingFiles.map((file, idx) => {
+              // Get file URL: Cloudinary url or local path
+              const fileUrl = file.url || (file.path ? `/${file.path}` : null);
+              const isImage = file.mimetype?.startsWith('image/');
+              const isPdf = file.mimetype === 'application/pdf';
+
+              return (
+                <div
+                  key={file._id || idx}
+                  className="border rounded-lg p-3 relative group"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            ))}
+                  {isImage && fileUrl ? (
+                    <img
+                      src={fileUrl}
+                      alt={file.originalName}
+                      className="w-full h-32 object-cover rounded mb-2"
+                    />
+                  ) : (
+                    <div className="w-full h-32 bg-gray-100 flex items-center justify-center rounded mb-2">
+                      <span className="text-4xl">{isPdf ? '📄' : '📎'}</span>
+                    </div>
+                  )}
+                  <p className="text-xs text-gray-600 truncate">{file.originalName}</p>
+                  <button
+                    type="button"
+                    onClick={() => removeExistingFile(file._id)}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Remove file"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

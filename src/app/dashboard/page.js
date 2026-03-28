@@ -9,6 +9,7 @@ import Button from '../../components/ui/Button';
 import SearchBar from '../../components/common/SearchBar';
 import TaskList from '../../components/common/TaskList';
 import TaskForm from '../../components/forms/TaskForm';
+import TaskDetailModal from '../../components/modals/TaskDetailModal';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -25,6 +26,8 @@ const Dashboard = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const pageSize = 10;
 
@@ -74,6 +77,9 @@ const Dashboard = () => {
   const handleEdit = (task) => {
     setEditingTask(task);
     setIsFormOpen(true);
+    // Close detail modal if it's open
+    setIsDetailModalOpen(false);
+    setSelectedTask(null);
   };
 
   const handleDelete = async (taskId) => {
@@ -97,6 +103,16 @@ const Dashboard = () => {
   const handleFormSuccess = () => {
     handleFormClose();
     fetchTasks(currentPage, searchQuery, selectedTechStacks);
+  };
+
+  const handleTaskClick = (task) => {
+    setSelectedTask(task);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedTask(null);
   };
 
   const handleLogout = async () => {
@@ -186,8 +202,7 @@ const Dashboard = () => {
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
+              onTaskClick={handleTaskClick}
             />
           )}
         </main>
@@ -197,6 +212,18 @@ const Dashboard = () => {
           isOpen={isFormOpen}
           onClose={handleFormClose}
           initialData={editingTask}
+          onSuccess={handleFormSuccess}
+        />
+
+        {/* Task Detail Modal */}
+        <TaskDetailModal
+          isOpen={isDetailModalOpen}
+          onClose={handleCloseDetailModal}
+          task={selectedTask}
+          currentUserId={user?._id}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onFormSuccess={handleFormSuccess}
         />
       </div>
     </ProtectedRoute>

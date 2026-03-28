@@ -1,15 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import TaskCard from './TaskCard';
 import Pagination from '../ui/Pagination';
-import Button from '../ui/Button';
-import { useAuth } from '../../lib/auth';
 
-const TaskList = ({ tasks, total, currentPage, totalPages, onPageChange, onEdit, onDelete, refreshList }) => {
-  const { user } = useAuth();
-  const router = useRouter();
-
+const TaskList = ({ tasks, total, currentPage, totalPages, onPageChange, onTaskClick }) => {
   return (
     <div>
       {tasks.length === 0 ? (
@@ -25,9 +19,7 @@ const TaskList = ({ tasks, total, currentPage, totalPages, onPageChange, onEdit,
             <TaskCard
               key={task._id}
               task={task}
-              currentUserId={user?._id}
-              onEdit={onEdit}
-              onDelete={onDelete}
+              onClick={() => onTaskClick(task)}
             />
           ))}
         </>

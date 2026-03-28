@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { tasksAPI, companiesAPI, tagsAPI } from '../../lib/api';
 import { TECH_STACKS } from '../../lib/constants';
@@ -11,19 +11,52 @@ import FileUploader from './FileUploader';
 import CompanySelect from './CompanySelect';
 import TagSelector from './TagSelector';
 
-const TaskForm = ({ isOpen, onClose, initialData = null }) => {
+const TaskForm = ({ isOpen, onClose, initialData = null, onSuccess }) => {
   const router = useRouter();
+
+  // Reset form when initialData changes or modal opens/closes
+  useEffect(() => {
+    if (initialData) {
+      // Edit mode - populate with existing task data
+      setFormData({
+        title: initialData.title || '',
+        body: initialData.body || '',
+        techStack: initialData.techStack || [],
+        companyId: initialData.company?._id || '',
+        companyName: initialData.company?.name || '',
+        tagIds: initialData.tags?.map((t) => t._id) || [],
+        tags: initialData.tags || [],
+      });
+      setExistingFiles(initialData.files || []);
+    } else {
+      // Create mode - reset form
+      setFormData({
+        title: '',
+        body: '',
+        techStack: [],
+        companyId: '',
+        companyName: '',
+        tagIds: [],
+        tags: [],
+      });
+      setExistingFiles([]);
+    }
+    setNewFiles([]); // Always clear new files when switching tasks
+    setFilesToDelete([]); // Clear files to delete
+  }, [initialData]);
+
   const [formData, setFormData] = useState({
-    title: initialData?.title || '',
-    body: initialData?.body || '',
-    techStack: initialData?.techStack || [],
-    companyId: initialData?.company?._id || '',
-    companyName: initialData?.company?.name || '',
-    tagIds: initialData?.tags?.map((t) => t._id) || [],
-    tags: initialData?.tags || [],
+    title: '',
+    body: '',
+    techStack: [],
+    companyId: '',
+    companyName: '',
+    tagIds: [],
+    tags: [],
   });
   const [newFiles, setNewFiles] = useState([]);
-  const [existingFiles, setExistingFiles] = useState(initialData?.files || []);
+  const [existingFiles, setExistingFiles] = useState([]);
+  const [filesToDelete, setFilesToDelete] = useState([]); // Track file IDs to delete
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -37,6 +70,14 @@ const TaskForm = ({ isOpen, onClose, initialData = null }) => {
   const handleCreateTag = async (tagData) => {
     const res = await tagsAPI.create(tagData);
     return res;
+  };
+
+  // Handle removal of existing file (for edit mode)
+  const handleRemoveExistingFile = (fileId) => {
+    // Remove from existingFiles array
+    setExistingFiles((prev) => prev.filter((f) => f._id !== fileId));
+    // Add to filesToDelete list
+    setFilesToDelete((prev) => [...prev, fileId]);
   };
 
   const handleSubmit = async (e) => {
@@ -66,17 +107,26 @@ const TaskForm = ({ isOpen, onClose, initialData = null }) => {
         payload.append('companyId', formData.companyId);
       }
 
-      // Append tags
-      formData.tagIds.forEach((tagId) => {
-        payload.append('tagIds', tagId);
-      });
+      // Append tags - use tags array to get IDs
+      if (formData.tags && formData.tags.length > 0) {
+        formData.tags.forEach((tag) => {
+          payload.append('tagIds', tag._id);
+        });
+      }
 
       // Append new tag names (if any are being created)
       // In a real implementation, we'd track newly created tag names
       // For now, assume tagIds covers both existing and newly created tags
       // because TagSelector returns the created tag object with _id
 
-      // Append files
+      // Append files to delete (for editing)
+      if (filesToDelete.length > 0) {
+        filesToDelete.forEach((fileId) => {
+          payload.append('filesToDelete', fileId);
+        });
+      }
+
+      // Append new files
       newFiles.forEach((fileObj) => {
         payload.append('files', fileObj.file);
       });
@@ -87,7 +137,11 @@ const TaskForm = ({ isOpen, onClose, initialData = null }) => {
 
       if (res.data.success) {
         onClose();
-        router.refresh(); // Refresh to show new task
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          router.refresh(); // Fallback refresh
+        }
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save task');
@@ -222,6 +276,7 @@ const TaskForm = ({ isOpen, onClose, initialData = null }) => {
             files={newFiles}
             setFiles={setNewFiles}
             existingFiles={existingFiles}
+            onRemoveFile={handleRemoveExistingFile}
           />
         </div>
 
