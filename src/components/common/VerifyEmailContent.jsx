@@ -1,7 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+
+// Module-level flag to prevent duplicate verification calls (StrictMode workaround)
+let isVerifying = false;
 
 export default function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -10,6 +13,7 @@ export default function VerifyEmailContent() {
 
   const [status, setStatus] = useState(token ? 'verifying' : 'no-token');
   const [message, setMessage] = useState('');
+  const verifyingRef = useRef(false);
 
   useEffect(() => {
     if (!token) {
@@ -21,12 +25,14 @@ export default function VerifyEmailContent() {
     const verifyEmail = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        console.log('Verifying email with token:', token);
         const response = await fetch(`${apiUrl}/auth/verify-email/${token}`, {
           method: 'GET',
           credentials: 'include',
         });
 
         const data = await response.json();
+        console.log('Verification response:', { status: response.status, ok: response.ok, data });
 
         if (response.ok && data.success) {
           setStatus('success');
@@ -37,8 +43,9 @@ export default function VerifyEmailContent() {
           setMessage(data.message || 'Verification failed.');
         }
       } catch (error) {
+        console.error('Verification error:', error);
         setStatus('error');
-        setMessage('Network error.');
+        setMessage('Network error: ' + error.message);
       }
     };
 
