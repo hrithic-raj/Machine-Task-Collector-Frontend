@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
+import { useAuth } from '../../lib/auth';
 
 const TaskDetailModal = ({
   isOpen,
@@ -42,6 +43,19 @@ const TaskDetailModal = ({
       onDelete(task._id);
       onClose();
     }
+  };
+
+  const handleDownload = () => {
+    // Create an invisible iframe to trigger download without opening new tab
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = `${process.env.NEXT_PUBLIC_API_URL}/tasks/${task._id}/download`;
+    document.body.appendChild(iframe);
+
+    // Clean up after a delay (download will have started)
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+    }, 5000);
   };
 
   if (!task) return null;
@@ -184,6 +198,12 @@ const TaskDetailModal = ({
         <div className="flex justify-end gap-3 border-t pt-4">
           <Button variant="outline" onClick={onClose}>
             Close
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={handleDownload}
+          >
+            Download Task
           </Button>
           {isOwner && (
             <>
