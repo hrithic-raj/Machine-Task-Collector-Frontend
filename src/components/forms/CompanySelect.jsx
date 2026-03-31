@@ -132,7 +132,18 @@ const CompanySelect = ({ selectedCompanyId, onCompanySelect, onCreateCompany }) 
           <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
             {companies.length === 0 ? (
               <div className="px-4 py-3 text-sm text-gray-500">
-                {loading ? 'Searching...' : 'No companies found'}
+                {loading ? 'Searching...' : (
+                  <div className='flex justify-between'>
+                    <span>No companies found</span> 
+                    <button
+                      type="button"
+                      onClick={handleCreateNew}
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      + Create one "{search}"
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               companies.map((company) => (
