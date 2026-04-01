@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, user, isAuthenticated } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e) => {
@@ -23,7 +23,13 @@ export default function LoginPage() {
     try {
       const result = await login(email, password);
       if (result.success) {
-        router.push('/dashboard');
+        // Check if user needs approval (intern not approved)
+        const userData = result.data;
+        if (userData.role === 'intern' && !userData.isApproved) {
+          router.push('/waiting-for-approval');
+        } else {
+          router.push('/dashboard');
+        }
       } else {
         setError(result.message || 'Login failed');
       }
@@ -33,6 +39,21 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  // Redirect if already authenticated and approved
+  if (isAuthenticated && user) {
+    if (user.role === 'intern' && !user.isApproved) {
+      if (typeof window !== 'undefined') {
+        window.location.href = '/waiting-for-approval';
+      }
+      return null;
+    } else {
+      if (typeof window !== 'undefined') {
+        window.location.href = '/dashboard';
+      }
+      return null;
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

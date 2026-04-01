@@ -60,6 +60,18 @@ export const tagsAPI = {
   create: (tagData) => api.post('/tags', tagData),
 };
 
+// Admin API
+export const adminAPI = {
+  getStatistics: () => api.get('/admin/statistics'),
+  getUsers: (params) => api.get('/admin/users', { params }),
+  getUser: (id) => api.get(`/admin/users/${id}`),
+  approveUser: (id) => api.put(`/admin/users/${id}/approve`),
+  rejectUser: (id) => api.put(`/admin/users/${id}/reject`),
+  blockUser: (id, reason) => api.put(`/admin/users/${id}/block`, { reason }),
+  unblockUser: (id) => api.put(`/admin/users/${id}/unblock`),
+  changeUserRole: (id, role) => api.put(`/admin/users/${id}/role`, { role }),
+};
+
 // Tasks API
 export const tasksAPI = {
   getAll: (params) => api.get('/tasks', { params }),

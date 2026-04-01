@@ -10,11 +10,14 @@ const TaskDetailModal = ({
   onClose,
   task,
   currentUserId,
+  currentUserRole,
   onEdit,
   onDelete,
   onFormSuccess,
 }) => {
   const isOwner = task?.submittedBy?._id === currentUserId;
+  const canEditOrDelete =
+    isOwner || ['admin', 'super_admin'].includes(currentUserRole);
 
   // Close modal on Escape key is handled by Modal component
 
@@ -205,7 +208,7 @@ const TaskDetailModal = ({
           >
             Download Task
           </Button>
-          {isOwner && (
+          {canEditOrDelete && (
             <>
               <Button
                 variant="primary"

@@ -139,12 +139,34 @@ const Dashboard = () => {
         <nav className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
-              <h1 className="text-xl font-bold text-gray-900">
-                Machine Task Collector
-              </h1>
+              <div className="flex items-center gap-8">
+                <h1 className="text-xl font-bold text-gray-900">
+                  Machine Task Collector
+                </h1>
+                {/* Admin Navigation Links */}
+                {['admin', 'super_admin'].includes(user?.role) && (
+                  <div className="hidden md:flex items-center gap-4">
+                    <a
+                      href="/admin/dashboard"
+                      className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                    >
+                      Admin Dashboard
+                    </a>
+                    <a
+                      href="/admin/users"
+                      className="text-sm font-medium text-gray-600 hover:text-gray-900"
+                    >
+                      User Management
+                    </a>
+                  </div>
+                )}
+              </div>
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-600">
-                  Welcome, {user?.name}
+                <span className="text-sm text-gray-600 hidden sm:inline">
+                  {user?.name} ({user?.role})
+                </span>
+                <span className="text-sm text-gray-600 sm:hidden">
+                  {user?.name}
                 </span>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
                   Logout
@@ -153,6 +175,24 @@ const Dashboard = () => {
             </div>
           </div>
         </nav>
+
+        {/* Mobile Admin Navigation */}
+        {['admin', 'super_admin'].includes(user?.role) && (
+          <div className="md:hidden bg-white border-b px-4 py-2 flex gap-2">
+            <a
+              href="/admin/dashboard"
+              className="flex-1 text-center text-sm font-medium text-blue-600 bg-blue-50 px-3 py-2 rounded"
+            >
+              Admin Dashboard
+            </a>
+            <a
+              href="/admin/users"
+              className="flex-1 text-center text-sm font-medium text-gray-600 bg-gray-50 px-3 py-2 rounded"
+            >
+              User Management
+            </a>
+          </div>
+        )}
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -221,6 +261,7 @@ const Dashboard = () => {
           onClose={handleCloseDetailModal}
           task={selectedTask}
           currentUserId={user?._id}
+          currentUserRole={user?.role}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onFormSuccess={handleFormSuccess}

@@ -37,6 +37,11 @@ export const AuthProvider = ({ children }) => {
     const res = await authAPI.login({ email, password });
     if (res.data.success) {
       setUser(res.data.data);
+      // Check if user is approved (only for intern role)
+      if (res.data.data.role === 'intern' && !res.data.data.isApproved) {
+        // User is not approved, will be redirected to approval waiting page
+        return { success: false, message: 'Your account is pending approval' };
+      }
     }
     return res.data;
   };
@@ -70,7 +75,7 @@ export const AuthProvider = ({ children }) => {
 
 // Higher-order component to protect routes
 export const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
 
   if (loading) {
     return (
@@ -87,6 +92,14 @@ export const ProtectedRoute = ({ children }) => {
     // Client-side redirect as fallback (interceptor handles most cases)
     if (typeof window !== 'undefined') {
       window.location.href = '/login';
+    }
+    return null;
+  }
+
+  // Check if intern user is approved
+  if (user && user.role === 'intern' && !user.isApproved) {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/waiting-for-approval';
     }
     return null;
   }
