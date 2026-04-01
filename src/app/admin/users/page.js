@@ -1,12 +1,14 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, ProtectedRoute } from '../../../lib/auth';
 import { adminAPI } from '../../../lib/api';
 import Button from '../../../components/ui/Button';
+import { Suspense } from 'react';
 
-const AdminUsersPage = () => {
+const AdminUsersContent = () => {
   const { user, logout } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -478,6 +480,16 @@ const AdminUsersPage = () => {
         </main>
       </div>
       )}
+    </ProtectedRoute>
+  );
+};
+
+const AdminUsersPage = () => {
+  return (
+    <ProtectedRoute>
+      <Suspense fallback={<div>Loading...</div>}>
+        <AdminUsersContent />
+      </Suspense>
     </ProtectedRoute>
   );
 };
