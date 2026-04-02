@@ -74,6 +74,12 @@ const AdminDashboard = () => {
                     User Management
                   </button>
                   <button
+                    onClick={() => router.push('/admin/companies')}
+                    className="text-sm font-medium text-gray-600 hover:text-gray-900"
+                  >
+                    Companies
+                  </button>
+                  <button
                     onClick={() => router.push('/dashboard')}
                     className="text-sm font-medium text-gray-600 hover:text-gray-500"
                   >
@@ -111,6 +117,12 @@ const AdminDashboard = () => {
             Users
           </button>
           <button
+            onClick={() => router.push('/admin/companies')}
+            className="flex-1 text-sm font-medium text-gray-600 bg-gray-50 px-3 py-2 rounded"
+          >
+            Companies
+          </button>
+          <button
             onClick={() => router.push('/dashboard')}
             className="flex-1 text-sm font-medium text-gray-600 bg-gray-50 px-3 py-2 rounded"
           >
@@ -134,7 +146,7 @@ const AdminDashboard = () => {
           {stats && (
             <>
               {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
                 {/* Total Users */}
                 <div className="bg-white rounded-lg shadow p-6">
                   <div className="flex items-center justify-between">
@@ -206,6 +218,24 @@ const AdminDashboard = () => {
                   </div>
                   <div className="mt-4 text-sm text-gray-500">
                     Currently blocked
+                  </div>
+                </div>
+
+                {/* Total Companies */}
+                <div className="bg-white rounded-lg shadow p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Total Companies</p>
+                      <p className="text-3xl font-bold text-gray-900">{stats.companies?.total || 0}</p>
+                    </div>
+                    <div className="p-3 bg-indigo-100 rounded-full">
+                      <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="mt-4 text-sm text-gray-500">
+                    Registered companies
                   </div>
                 </div>
               </div>

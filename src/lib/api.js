@@ -52,6 +52,7 @@ export const authAPI = {
 export const companiesAPI = {
   getAll: (search) => api.get('/companies', { params: { search } }),
   create: (companyData) => api.post('/companies', companyData),
+  update: (id, companyData) => api.put(`/companies/${id}`, companyData),
 };
 
 // Tags API

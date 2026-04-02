@@ -59,6 +59,7 @@ const TaskForm = ({ isOpen, onClose, initialData = null, onSuccess }) => {
   const [filesToDelete, setFilesToDelete] = useState([]); // Track file IDs to delete
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [resetSignal, setResetSignal] = useState(0); // Used to force child component remount on reset
 
   // For company creation callback
   const handleCreateCompany = async (companyData) => {
@@ -136,7 +137,7 @@ const TaskForm = ({ isOpen, onClose, initialData = null, onSuccess }) => {
         : await tasksAPI.create(payload);
 
       if (res.data.success) {
-        onClose();
+        handleClose(); // Reset form and then close
         if (onSuccess) {
           onSuccess();
         } else {
@@ -179,6 +180,7 @@ const TaskForm = ({ isOpen, onClose, initialData = null, onSuccess }) => {
     setNewFiles([]);
     setExistingFiles([]);
     setError('');
+    setResetSignal((prev) => prev + 1); // Force remount of child components
   };
 
   const handleClose = () => {
@@ -188,6 +190,7 @@ const TaskForm = ({ isOpen, onClose, initialData = null, onSuccess }) => {
 
   return (
     <Modal
+      key={`modal-${resetSignal}`}
       isOpen={isOpen}
       onClose={handleClose}
       title={initialData ? 'Edit Task' : 'Add New Machine Task'}
@@ -203,6 +206,7 @@ const TaskForm = ({ isOpen, onClose, initialData = null, onSuccess }) => {
         <div className="space-y-4">
           {/*Company */}
           <CompanySelect
+            key={`company-select-${resetSignal}`}
             selectedCompanyId={formData.companyId}
             onCompanySelect={(id, name) => {
               setFormData((prev) => ({
@@ -267,6 +271,7 @@ const TaskForm = ({ isOpen, onClose, initialData = null, onSuccess }) => {
 
           {/* Tags */}
           <TagSelector
+            key={`tag-selector-${resetSignal}`}
             selectedTags={formData.tags}
             setSelectedTags={(tags) => setFormData({ ...formData, tags })}
           />

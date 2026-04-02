@@ -212,6 +212,12 @@ const AdminUsersContent = () => {
                     User Management
                   </button>
                   <button
+                    onClick={() => router.push('/admin/companies')}
+                    className="text-sm font-medium text-gray-600 hover:text-gray-900"
+                  >
+                    Companies
+                  </button>
+                  <button
                     onClick={() => router.push('/dashboard')}
                     className="text-sm font-medium text-gray-600 hover:text-gray-500"
                   >
@@ -247,6 +253,12 @@ const AdminUsersContent = () => {
             className="flex-1 text-sm font-medium text-blue-600 bg-blue-50 px-3 py-2 rounded"
           >
             Users
+          </button>
+          <button
+            onClick={() => router.push('/admin/companies')}
+            className="flex-1 text-sm font-medium text-gray-600 bg-gray-50 px-3 py-2 rounded"
+          >
+            Companies
           </button>
           <button
             onClick={() => router.push('/dashboard')}
@@ -419,13 +431,15 @@ const AdminUsersContent = () => {
                                 Unblock
                               </button>
                             )}
-                            <button
-                              onClick={() => handleChangeRole(u._id, u.role === 'super_admin' ? 'admin' : u.role === 'admin' ? 'intern' : 'admin')}
-                              className="text-blue-600 hover:text-blue-900 font-medium"
-                              title="Toggle role"
-                            >
-                              Role: {u.role}
-                            </button>
+                            {user.role === 'super_admin' && (
+                              <button
+                                onClick={() => handleChangeRole(u._id, u.role === 'super_admin' ? 'admin' : u.role === 'admin' ? 'intern' : 'admin')}
+                                className="text-blue-600 hover:text-blue-900 font-medium"
+                                title="Toggle role"
+                              >
+                                Role: {u.role}
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -473,7 +487,7 @@ const AdminUsersContent = () => {
               <li>Only verified users with intern role need approval. Admin and Super Admin roles auto-approve users.</li>
               <li>Approving an intern allows them to access the dashboard and create tasks.</li>
               <li>Blocked users cannot log in or access the system.</li>
-              <li>Only Super Admins can assign the Super Admin role to others.</li>
+              <li>Only Super Admins can change user roles (including assigning admin or super_admin).</li>
               <li>Change user roles carefully. Promoting to Super Admin gives full system access.</li>
             </ul>
           </div>
