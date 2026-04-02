@@ -117,7 +117,8 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     await logout();
-    router.push('/login');
+    // No need to redirect manually - ProtectedRoute will handle it
+    // when it detects user is null and redirects to /login
   };
 
   // Loading state

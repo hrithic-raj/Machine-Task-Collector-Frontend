@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }) => {
       console.error('Logout error:', error);
     } finally {
       setUser(null);
+      // Clear any cached data if needed
     }
   };
 
