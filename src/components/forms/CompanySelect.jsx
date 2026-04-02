@@ -167,8 +167,8 @@ const CompanySelect = ({ selectedCompanyId, onCompanySelect, onCreateCompany }) 
         )}
       </div>
 
-      {/* Create new company option */}
-      {search.length >= 2 && !showNewForm && (
+      {/* Create new company option - only show if no company is selected */}
+      {search.length >= 2 && !showNewForm && !selectedCompanyId && (
         <div className="mt-2">
           <button
             type="button"
