@@ -249,7 +249,7 @@ const TaskForm = ({ isOpen, onClose, initialData = null, onSuccess }) => {
           {/* Tech Stack */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tech Stack
+              Tech Stack <span className="text-red-500">*</span>
             </label>
             <div className="flex flex-wrap gap-2">
               {TECH_STACKS.map((stack) => (
@@ -298,7 +298,7 @@ const TaskForm = ({ isOpen, onClose, initialData = null, onSuccess }) => {
           <Button
             type="submit"
             variant="primary"
-            disabled={loading || !formData.title || !formData.body || !formData.companyId}
+            disabled={loading || !formData.title || !formData.body || !formData.companyId || formData.techStack<1}
           >
             {loading
               ? 'Saving...'
