@@ -122,6 +122,19 @@ const AdminCompaniesContent = () => {
     }
   };
 
+  const handleDeleteCompany = async (id, name) => {
+    if (!window.confirm(`Are you sure you want to delete company "${name}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      await companiesAPI.delete(id);
+      fetchCompanies(); // Refresh list
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete company');
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditForm({ ...editForm, [name]: value });
@@ -403,12 +416,20 @@ const AdminCompaniesContent = () => {
                                   Cancel Edit
                                 </Button>
                               ) : (
-                                <button
-                                  onClick={() => handleEdit(company)}
-                                  className="text-blue-600 hover:text-blue-900 font-medium"
-                                >
-                                  Edit
-                                </button>
+                                <>
+                                  <button
+                                    onClick={() => handleEdit(company)}
+                                    className="text-blue-600 hover:text-blue-900 font-medium mr-2"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteCompany(company._id, company.name)}
+                                    className="text-red-600 hover:text-red-900 font-medium"
+                                  >
+                                    Delete
+                                  </button>
+                                </>
                               )}
                             </td>
                           </tr>
