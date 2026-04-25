@@ -1,5 +1,5 @@
 // Tech stack options
-export const TECH_STACKS = ['MERN', 'Python', 'Dotnet', 'Frontend', 'GoLang', 'JAVA'];
+export const TECH_STACKS = ['MERN', 'Python', 'Dotnet', 'Frontend', 'GoLang', 'JAVA', 'Flutter', 'DA', 'DS', 'Testing'];
 
 // File upload limits
 export const UPLOAD_LIMITS = {

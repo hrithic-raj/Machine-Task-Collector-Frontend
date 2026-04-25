@@ -22,6 +22,7 @@ const AdminUsersContent = () => {
 
   // Filters
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
@@ -51,11 +52,22 @@ const AdminUsersContent = () => {
     if (status) setStatusFilter(status);
   }, [searchParams]);
 
+  // Debounce search input to prevent excessive API calls
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300); // 300ms debounce
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
+
   useEffect(() => {
     if (user && ['admin', 'super_admin'].includes(user.role)) {
       fetchUsers(1);
     }
-  }, [roleFilter, statusFilter, search, user]);
+  }, [roleFilter, statusFilter, debouncedSearch, user]);
 
   const fetchUsers = async (page = 1) => {
     setLoading(true);
@@ -65,7 +77,7 @@ const AdminUsersContent = () => {
         page,
         limit: pageSize,
       };
-      if (search) params.search = search;
+      if (debouncedSearch) params.search = debouncedSearch;
       if (roleFilter) params.role = roleFilter;
       if (statusFilter === 'pending') params.isApproved = false;
       else if (statusFilter === 'approved') params.isApproved = true;
