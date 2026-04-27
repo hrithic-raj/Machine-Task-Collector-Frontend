@@ -184,6 +184,13 @@ const AdminUsersContent = () => {
     }
     return 'bg-green-100 text-green-800';
   };
+  
+  const getEmailStatusBadgeClass = (user) => {
+    if (!user.isVerified) {
+      return 'bg-yellow-100 text-yellow-800';
+    }
+    return 'bg-green-100 text-green-800';
+  };
 
   const getStatusText = (user) => {
     if (user.isBlocked) return 'Blocked';
@@ -367,6 +374,9 @@ const AdminUsersContent = () => {
                       Role
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Email Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -400,6 +410,11 @@ const AdminUsersContent = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClass(u.role)}`}>
                             {u.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getEmailStatusBadgeClass(u)}`}>
+                          {u.isVerified? "verified" : "pending"}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
